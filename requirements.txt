@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+httpx
+pydantic
+pytest
+pypdf
+pypdfium2
+Pillow
+reportlab

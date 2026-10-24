@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sloth Digest</title>
+<style>
+:root{
+  --bg1:#0b1a15; --bg2:#12302a; --card:#102720cc; --line:#2a4a3f; --ink:#f3efe2; --mute:#9fb8ac;
+  --leaf:#7bd88f; --amber:#f4c95d; --rose:#ff9b8a; --sky:#8fd3ff; --fur:#8a6a4b; --cream:#efe0c3;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"DejaVu Sans",sans-serif;
+  background:radial-gradient(1200px 700px at 80% -10%,#1d4a3c 0,transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2));
+  background-attachment:fixed;overflow-x:hidden}
+#leaves{position:fixed;inset:0;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 20px 60px}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:8px}
+
+/* header with a swaying sloth */
+header{position:relative;padding:28px 0 6px;display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap}
+.branch{position:absolute;left:0;right:0;top:0;height:14px;border-radius:10px;background:linear-gradient(#5b3f27,#3b2917);box-shadow:0 6px 18px #0008}
+.hang{width:150px;height:190px;margin-top:6px;transform-origin:50% 0;animation:sway 7s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-3.5deg)}50%{transform:rotate(3.5deg)}}
+h1{margin:0;font-size:clamp(38px,7vw,64px);letter-spacing:.5px;line-height:1.05}
+h1 span{color:var(--leaf)}
+.tag{margin:8px 0 14px;color:var(--mute);font-size:18px;max-width:560px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13.5px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:#0d221bcc;color:#d9e8df;display:inline-flex;align-items:center;gap:7px}
+.dot{width:9px;height:9px;border-radius:50%;background:#7a8f86;display:inline-block}
+.dot.ok{background:var(--leaf);box-shadow:0 0 10px var(--leaf)} .dot.bad{background:var(--rose)}
+
+main{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;margin-top:26px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;backdrop-filter:blur(6px)}
+h2{margin:0 0 4px;font-size:20px;display:flex;align-items:center;gap:10px}
+.num{width:28px;height:28px;border-radius:50%;background:var(--leaf);color:#0b1a15;font-weight:800;display:grid;place-items:center;font-size:15px}
+.hint{color:var(--mute);font-size:14px;margin:0 0 14px}
+
+.drop{border:2px dashed #3d6657;border-radius:16px;padding:26px 18px;text-align:center;cursor:pointer;transition:.25s;background:#0c1f19}
+.drop:hover,.drop.over{border-color:var(--leaf);background:#12302a;transform:translateY(-1px)}
+.drop b{display:block;font-size:18px}
+.drop small{color:var(--mute)}
+textarea{width:100%;min-height:120px;margin-top:12px;border-radius:12px;border:1px solid var(--line);background:#0a1914;color:var(--ink);padding:12px;font:13.5px/1.45 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px}
+label{font-size:14px;color:#d9e8df}
+select{background:#0a1914;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14.5px}
+button{cursor:pointer;font:inherit}
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:800;font-size:16px;background:linear-gradient(135deg,var(--leaf),#4fb98a);color:#08140f;transition:.2s;box-shadow:0 8px 22px #2fa06a55}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 28px #2fa06a77}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-weight:600;padding:10px 16px;font-size:14.5px}
+.btn.ghost:hover{border-color:var(--leaf)}
+.link{background:none;border:0;color:var(--sky);text-decoration:underline;padding:0;font-size:14px}
+.loaded{margin-top:10px;font-size:14px;color:var(--leaf)}
+
+/* slow progress */
+#prog{display:none;margin-top:18px}
+.track{position:relative;height:10px;border-radius:999px;background:#0a1914;border:1px solid var(--line);margin:26px 4px 8px}
+.fill{height:100%;width:2%;border-radius:999px;background:linear-gradient(90deg,#3fae7a,var(--leaf));transition:width 3.2s cubic-bezier(.4,.1,.2,1)}
+.crawler{position:absolute;top:-26px;left:2%;width:44px;height:30px;transform:translateX(-50%);transition:left 3.2s cubic-bezier(.4,.1,.2,1);animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{margin-top:0}50%{margin-top:-3px}}
+#stage{font-size:15px;color:#d9e8df}
+#stage small{color:var(--mute)}
+.err{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:#3a1b1b;border:1px solid #7a3a3a;color:#ffd7d0}
+
+/* results */
+#out{display:none}
+.headline{border-color:#3e7d62;background:linear-gradient(160deg,#143a2d,#0f2a21)}
+.headline p{margin:0;font-size:clamp(20px,3.2vw,27px);line-height:1.35;font-weight:700}
+.headline p+p{margin-top:8px;color:#d9ead9;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.stat{background:#0a1914;border:1px solid var(--line);border-radius:14px;padding:11px 14px}
+.stat b{display:block;font-size:22px;color:var(--amber)}
+.stat span{font-size:12.5px;color:var(--mute)}
+.notice{margin-top:12px;padding:10px 14px;border-radius:12px;background:#3a3216;border:1px solid #7a6a2a;color:#ffeaa8;font-size:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.item{border-top:1px solid var(--line);padding:14px 0}
+.item:first-of-type{border-top:0}
+.who{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font-weight:800;color:#0b1a15;margin-right:10px;vertical-align:middle;font-size:14px}
+.task{font-weight:650}
+.pill{display:inline-block;font-size:12.5px;padding:2px 10px;border-radius:999px;background:#3a3216;color:var(--amber);border:1px solid #6a5a24;margin-left:8px;vertical-align:middle}
+.pill.un{background:#222;color:#bbb;border-color:#444}
+.who-name{color:var(--mute);font-size:13.5px;margin-left:40px;display:block}
+.rbtn{margin-left:40px;margin-top:4px;background:none;border:0;color:var(--sky);font-size:13.5px;padding:0}
+.rcpt{display:none;margin:8px 0 0 40px;padding:10px 12px;border-left:3px solid var(--leaf);background:#0a1914;border-radius:0 10px 10px 0;font-size:14px;white-space:pre-wrap;color:#e4efe8}
+.rcpt small{display:block;color:var(--mute);margin-bottom:3px}
+.rcpt.open{display:block}
+ul.pts{margin:6px 0 0;padding-left:20px;color:#dbe9e0}
+.empty{color:var(--mute);font-size:14.5px;margin:6px 0 0}
+.foot{margin-top:34px;text-align:center;color:var(--mute);font-size:13.5px}
+.copied{color:var(--leaf);font-size:14px;margin-left:8px}
+
+/* tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#0d221bcc;color:#d9e8df;border-radius:999px;padding:10px 18px;font-weight:700;font-size:15px;transition:.2s}
+.tab:hover{border-color:var(--leaf)}
+.tab[aria-selected="true"]{background:var(--leaf);color:#08140f;border-color:var(--leaf)}
+.pane{display:none}.pane.on{display:block}
+.histrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:#d9e8df}
+/* picture drop */
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.thumbs span{font-size:13px;padding:4px 10px;border-radius:999px;background:#0a1914;border:1px solid var(--line);color:#d9e8df}
+.kinds{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0 4px}
+.kinds i{font-style:normal;font-size:12.5px;padding:2px 10px;border-radius:999px;background:#17382d;color:#bfe9cc;border:1px solid #2f5d4c}
+/* live */
+.live-badge{display:none;align-items:center;gap:7px;font-weight:800;font-size:13px;letter-spacing:.08em;color:#ffd7d0;background:#3a1b1b;border:1px solid #7a3a3a;border-radius:999px;padding:4px 12px}
+.live-badge.on{display:inline-flex}
+.live-badge:before{content:"";width:9px;height:9px;border-radius:50%;background:#ff5d5d;animation:blink 1.4s infinite}
+.live-badge.paused:before{animation:none;background:#c9a64a}
+@keyframes blink{50%{opacity:.25}}
+.livegrid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:18px;margin-top:14px}
+.livegrid video{width:100%;border-radius:12px;border:1px solid var(--line);background:#050d0a;aspect-ratio:16/10;object-fit:contain}
+.lstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.lstat .stat b{font-size:19px}
+.livemsg{margin-top:10px;font-size:14px;color:#d9e8df;min-height:22px}
+.steps{margin:0;padding-left:20px;color:#d9e8df;font-size:14.5px}
+.steps li{margin:3px 0}
+/* history */
+.hitem{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px;background:#0b1e18}
+.hitem h3{margin:0;font-size:17px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hitem time{color:var(--mute);font-size:13px}
+.hitem p{margin:6px 0 8px;color:#e4efe8;font-size:15px}
+.hmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tagk{font-size:12px;padding:2px 9px;border-radius:999px;background:#17382d;color:#bfe9cc;border:1px solid #2f5d4c}
+.hmeta .btn{padding:7px 14px;font-size:13.5px}
+.hmeta .sp{flex:1}
+input[type=search]{background:#0a1914;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14.5px;min-width:200px}
+.srcline{display:none;color:var(--amber);font-size:14px;margin:0 0 8px}
+@media (max-width:760px){ .livegrid{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:640px){ .hang{width:100px;height:128px} header{gap:12px} .card{padding:18px} }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+<canvas id="leaves" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header>
+    <div class="branch"></div>
+    <svg class="hang" viewBox="0 0 150 190" role="img" aria-label="A sloth hanging from a branch">
+      <path d="M44 6 C 40 40, 46 60, 56 78" stroke="#6b4e34" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <path d="M106 6 C 110 40, 104 60, 94 78" stroke="#6b4e34" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <ellipse cx="75" cy="128" rx="38" ry="50" fill="#8a6a4b"/>
+      <ellipse cx="75" cy="136" rx="22" ry="32" fill="#a68762"/>
+      <path d="M52 168 q-8 14 2 20" stroke="#6b4e34" stroke-width="10" stroke-linecap="round" fill="none"/>
+      <path d="M98 168 q8 14 -2 20" stroke="#6b4e34" stroke-width="10" stroke-linecap="round" fill="none"/>
+      <ellipse cx="75" cy="80" rx="38" ry="32" fill="#a68762"/>
+      <path d="M44 78 q31 -26 62 0 q-4 22 -31 24 q-27 -2 -31 -24z" fill="#efe0c3"/>
+      <ellipse cx="60" cy="78" rx="9" ry="12" fill="#3a2a1b" transform="rotate(-18 60 78)"/>
+      <ellipse cx="90" cy="78" rx="9" ry="12" fill="#3a2a1b" transform="rotate(18 90 78)"/>
+      <circle cx="61" cy="79" r="3.6" fill="#fff"/><circle cx="89" cy="79" r="3.6" fill="#fff"/>
+      <ellipse cx="75" cy="92" rx="6" ry="4.6" fill="#3a2a1b"/>
+      <path d="M66 99 q9 8 18 0" stroke="#3a2a1b" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>Sloth <span>Digest</span></h1>
+      <p class="tag">Slow and steady catch-up. Drop a chat file, a screenshot or a PDF, or just scan the open chat live. Get the two lines, the to-dos and the dates, each with its receipt.</p>
+      <div class="chips">
+        <span class="chip"><span class="dot" id="dotOllama"></span><span id="modelChip">checking model...</span></span>
+        <span class="chip">🔒 Everything runs on this computer</span>
+        <span class="chip">🖼️ Pictures are read, then dropped</span>
+        <span class="chip">🕘 History stays local, delete anytime</span>
+        <span class="chip">$0 per digest</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs" role="tablist" aria-label="Ways to catch up">
+      <button class="tab" role="tab" id="t-up" aria-selected="true" aria-controls="pane-up" type="button">📥 Drop a file</button>
+      <button class="tab" role="tab" id="t-live" aria-selected="false" aria-controls="pane-live" type="button">🔴 Live scan</button>
+      <button class="tab" role="tab" id="t-hist" aria-selected="false" aria-controls="pane-hist" type="button">🕘 History <span id="hcount"></span></button>
+    </div>
+    <label class="histrow" style="margin-top:-6px"><input type="checkbox" id="hist-on" checked> Save finished digests to History on this computer (only the digest and its receipts, never the chat file or pictures)</label>
+
+    <section class="card pane on" id="pane-up" role="tabpanel" aria-labelledby="t-up">
+      <h2 id="h-in"><span class="num">1</span> Drop your group chat</h2>
+      <p class="hint">Drop a WhatsApp export (<b>Export chat</b>, <b>Without media</b>), a Telegram result.json, <b>screenshots</b> of the chat, or a <b>PDF</b>. You can also paste a screenshot with Ctrl/Cmd+V.</p>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose chat files, screenshots or a PDF">
+        <b>Drop files here, or click to choose</b>
+        <div class="kinds"><i>.txt</i><i>.json</i><i>.pdf</i><i>.png</i><i>.jpg</i><i>.webp</i></div>
+        <small>Several screenshots at once are fine. Pictures and scanned PDFs are read by Gemma vision on this computer, so check the text before digesting.</small>
+        <input id="file" type="file" accept=".txt,.json,.pdf,text/plain,application/json,application/pdf,image/png,image/jpeg,image/webp,image/gif,image/bmp" multiple hidden>
+      </div>
+      <textarea id="text" placeholder="...or paste the chat here (lines like: 12/10/2026, 9:41 pm - Riya: see you at 10)" aria-label="Pasted chat text"></textarea>
+      <div id="loaded" class="loaded"></div>
+      <div class="row">
+        <label>Catch me up on
+          <select id="win">
+            <option value="">everything</option>
+            <option value="h12">the last 12 hours</option>
+            <option value="h24">the last 24 hours</option>
+            <option value="n200">the last 200 messages</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="fb" checked> If the AI is unavailable, show a simple keyword digest</label>
+        <button class="link" id="sample" type="button">Load a sample chat</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="go" type="button">Digest it, slowly 🍃</button>
+      </div>
+      <div id="prog" aria-live="polite">
+        <div class="track">
+          <svg class="crawler" id="crawler" viewBox="0 0 44 30" aria-hidden="true">
+            <ellipse cx="22" cy="17" rx="19" ry="10" fill="#8a6a4b"/><ellipse cx="33" cy="12" rx="9" ry="8" fill="#a68762"/>
+            <ellipse cx="34" cy="11" rx="6" ry="5" fill="#efe0c3"/><circle cx="32" cy="10" r="1.4" fill="#2a1d12"/><circle cx="37" cy="10" r="1.4" fill="#2a1d12"/>
+            <ellipse cx="35" cy="13.5" rx="1.6" ry="1.2" fill="#2a1d12"/>
+            <path d="M8 24 q-3 5 2 5M16 26 q-3 4 1 4M26 26 q3 4 -1 4" stroke="#6b4e34" stroke-width="3" stroke-linecap="round" fill="none"/>
+          </svg>
+          <div class="fill" id="fill"></div>
+        </div>
+        <div id="stage">Starting slowly...</div>
+      </div>
+      <div class="err" id="err" role="alert"></div>
+    </section>
+
+    <section class="card pane" id="pane-live" role="tabpanel" aria-labelledby="t-live">
+      <h2>🔴 Live scan <span class="live-badge" id="livebadge">LIVE</span></h2>
+      <p class="hint">Open the group in WhatsApp Web (or any chat window), press <b>Start live scan</b> and choose that window or tab. Every few seconds Sloth Digest looks at it, reads the new messages and keeps the digest up to date. Nothing to upload.</p>
+      <ol class="steps">
+        <li>Press <b>Start live scan</b> and pick the chat window or browser tab.</li>
+        <li>Keep the chat visible and scroll as you read. Zoom the chat in a little for better reading.</li>
+        <li>Press <b>Stop and save</b> when you are done. The final digest goes to History.</li>
+      </ol>
+      <div class="row">
+        <button class="btn" id="live-start" type="button">Start live scan</button>
+        <label>Look every
+          <select id="live-every"><option value="15">15 s</option><option value="30" selected>30 s</option><option value="60">60 s</option></select>
+        </label>
+        <button class="btn ghost" id="live-now" type="button" hidden>Scan now</button>
+        <button class="btn ghost" id="live-pause" type="button" hidden>Pause</button>
+        <button class="btn ghost" id="live-digest" type="button" hidden>Digest now</button>
+        <button class="btn ghost" id="live-stop" type="button" hidden>Stop and save</button>
+      </div>
+      <div class="livegrid" id="livegrid" hidden>
+        <div><video id="live-video" muted playsinline aria-label="Preview of the shared window"></video>
+          <p class="hint" style="margin-top:6px">Preview stays in your browser. Pictures sent to the local server are read and dropped, never saved.</p></div>
+        <div>
+          <div class="lstat" id="lstat"></div>
+          <div class="livemsg" id="livemsg" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="err" id="live-err" role="alert"></div>
+      <p class="hint" style="margin-top:14px">Honest limits: this is <b>near-live</b>, not instant (a local 4B model needs several seconds per picture). It only sees what is on screen, so scroll up to cover older messages. On a Mac, allow Screen Recording for your browser in System Settings, Privacy and Security. Reading small text from pictures can have mistakes, and the receipts show exactly what was read.</p>
+    </section>
+
+    <section class="card pane" id="pane-hist" role="tabpanel" aria-labelledby="t-hist">
+      <h2>🕘 History</h2>
+      <p class="hint">Your earlier catch-ups with the date and time. Stored only in <code>data/history.json</code> on this computer.</p>
+      <div class="row" style="margin-top:0">
+        <input type="search" id="hsearch" placeholder="Search title or headline" aria-label="Search history">
+        <button class="btn ghost" id="hclear" type="button">Clear all</button>
+      </div>
+      <div id="hlist"></div>
+    </section>
+
+    <div id="out">
+      <section class="card headline" aria-labelledby="h-head">
+        <h2 id="h-head">The catch-up</h2>
+        <p class="srcline" id="srcline"></p>
+        <div id="headline"></div>
+        <div class="stats" id="stats"></div>
+        <div id="notes"></div>
+        <div class="row">
+          <button class="btn ghost" id="copy" type="button">Copy as a morning brief</button><span class="copied" id="copied"></span>
+        </div>
+      </section>
+      <div class="grid2" style="margin-top:20px">
+        <section class="card"><h2>✅ To do</h2><p class="hint">Who promised or was asked to do what. Tap "receipt" to see the real message.</p><div id="actions"></div></section>
+        <section class="card"><h2>📅 Dates to remember</h2><p class="hint">Deadlines and plans mentioned in the chat.</p><div id="dates"></div>
+          <h2 style="margin-top:22px">❓ Questions asked</h2><div id="questions"></div></section>
+      </div>
+      <section class="card" style="margin-top:20px"><h2>🗒️ What happened</h2><ul class="pts" id="points"></ul></section>
+    </div>
+  </main>
+  <p class="foot" id="foot">&nbsp;</p>
+</div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const el = (tag, props = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else e.setAttribute(k, v); }
+  kids.flat().forEach(c => e.append(c));
+  return e;
+};
+const hue = n => { let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+let current = null;
+
+/* drifting leaves (slow on purpose) */
+(function(){
+  const c = $("#leaves"), x = c.getContext("2d");
+  let W, H, L = [];
+  const size = () => { W = c.width = innerWidth; H = c.height = innerHeight; };
+  size(); addEventListener("resize", size);
+  for (let i = 0; i < 16; i++) L.push({x: Math.random()*W, y: Math.random()*H, s: 8+Math.random()*12, v: .12+Math.random()*.25, a: Math.random()*6.28, w: .002+Math.random()*.004, h: 95+Math.random()*40});
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  (function f(){
+    x.clearRect(0,0,W,H);
+    for (const l of L){
+      l.y += l.v; l.a += l.w*10; l.x += Math.sin(l.a)*.35;
+      if (l.y > H+20){ l.y = -20; l.x = Math.random()*W; }
+      x.save(); x.translate(l.x,l.y); x.rotate(Math.sin(l.a)*.9);
+      x.fillStyle = `hsla(${l.h},55%,55%,.22)`; x.beginPath(); x.ellipse(0,0,l.s,l.s*.45,0,0,6.28); x.fill(); x.restore();
+    }
+    requestAnimationFrame(f);
+  })();
+})();
+
+/* health + stats */
+async function health(){
+  try {
+    const h = await (await fetch("/api/health")).json();
+    $("#dotOllama").className = "dot " + (h.ollama_running && h.model_ready ? "ok" : "bad");
+    $("#modelChip").textContent = h.ollama_running ? (h.model_ready ? `${h.model} · running locally` : `${h.model} not pulled yet`) : "Ollama not running";
+  } catch { $("#modelChip").textContent = "server not reachable"; }
+}
+async function totals(){
+  try {
+    const s = await (await fetch("/api/stats")).json();
+    $("#foot").textContent = s.digests ? `On this computer so far: ${s.digests} digest${s.digests===1?"":"s"}, ${s.messages_read} messages read, about ${s.minutes_saved} minutes of reading saved (estimated).` : "Nothing digested yet. Your first one is the slowest. 🦥";
+  } catch {}
+}
+health(); totals();
+
+/* tabs + history switch */
+const store = { get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } },
+                set(k, v){ try { localStorage.setItem(k, v); } catch {} } };
+$("#hist-on").checked = store.get("sd_hist", "1") === "1";
+$("#hist-on").onchange = () => store.set("sd_hist", $("#hist-on").checked ? "1" : "0");
+const TABS = {up: "#pane-up", live: "#pane-live", hist: "#pane-hist"};
+function tab(name){
+  for (const [k, sel] of Object.entries(TABS)) {
+    $(sel).classList.toggle("on", k === name); $("#t-" + k).setAttribute("aria-selected", k === name);
+  }
+  if (name === "hist") loadHistory();
+}
+for (const k of Object.keys(TABS)) $("#t-" + k).onclick = () => tab(k);
+
+/* input: chat files, screenshots, PDFs */
+const drop = $("#drop"), file = $("#file");
+let src = {name: "", kind: "text"};
+function setText(t, label, name, kind){ $("#text").value = t; $("#loaded").textContent = label ? "Loaded: " + label : ""; src = {name: name || "", kind: kind || "text"}; }
+const isText = f => /\.(txt|json)$/i.test(f.name) || f.type === "text/plain" || f.type === "application/json";
+const isPdf = f => /\.pdf$/i.test(f.name) || f.type === "application/pdf";
+const isPic = f => /^image\//.test(f.type) || /\.(png|jpe?g|webp|gif|bmp)$/i.test(f.name);
+function readTextFile(f){
+  const r = new FileReader();
+  r.onload = () => { hideErr(); setText(String(r.result), `${f.name} (${Math.round(f.size/1024)} KB)`, f.name, "text"); };
+  r.readAsText(f);
+}
+async function handleFiles(list){
+  const files = [...list];
+  if (!files.length) return;
+  hideErr();
+  if (files.some(f => /\.zip$/i.test(f.name))) { showErr("That is a .zip. Unzip it first, then drop the _chat.txt file inside."); return; }
+  const texts = files.filter(isText), pdfs = files.filter(isPdf), pics = files.filter(isPic);
+  if (!texts.length && !pdfs.length && !pics.length) { showErr("I can read .txt, .json, .pdf, .png, .jpg and .webp files."); return; }
+  if (texts.length && (pdfs.length || pics.length)) { showErr("Please drop either a chat file or pictures/PDFs, not both together."); return; }
+  if (texts.length) { readTextFile(texts[0]); return; }
+  await readPictures([...pdfs, ...pics]);
+}
+async function readPictures(list){
+  $("#go").disabled = true; $("#out").style.display = "none"; $("#prog").style.display = "block";
+  startT = Date.now(); setProgress(.03, "Starting to look...");
+  clearInterval(tick); tick = setInterval(() => { if ($("#stage").lastChild) $("#stage").lastChild.textContent = `  ${Math.round((Date.now()-startT)/1000)}s`; }, 1000);
+  let sid, problems = [];
+  try {
+    sid = (await (await fetch("/api/live/start", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({kind: "upload"})})).json()).session;
+    for (let i = 0; i < list.length; i++) {
+      const f = list[i];
+      setProgress(i / list.length + .02, `Reading ${f.name} (${i+1} of ${list.length}) with Gemma vision`);
+      let sent = false;
+      while (!sent) {
+        const r = await fetch(`/api/live/${sid}/image`, {method: "POST", headers: {"X-Kind": isPdf(f) ? "pdf" : "image"}, body: f});
+        const j = await r.json();
+        if (!r.ok) { problems.push(`${f.name}: ${j.detail || "could not be read"}`); break; }
+        sent = j.accepted;
+        if (!sent) await new Promise(r => setTimeout(r, 600));
+      }
+      if (!sent) continue;
+      for (;;) {
+        await new Promise(r => setTimeout(r, 700));
+        const st = await (await fetch("/api/live/" + sid)).json();
+        if (st.stage) setProgress(i / list.length + .05, st.stage);
+        if (!st.busy) { if (st.error) problems.push(`${f.name}: ${st.error}`); break; }
+      }
+    }
+    const st = await (await fetch("/api/live/" + sid)).json();
+    done();
+    if (st.transcript.trim()) {
+      const label = `${list.length} ${list.every(isPdf) ? "PDF" : "picture"}${list.length === 1 ? "" : "s"}, ${st.messages} messages read`;
+      setText(st.transcript, label + ". Please check the text, fix any mistakes, then press Digest.", st.chat_name || list[0].name, list.every(isPdf) ? "pdf" : "image");
+    }
+    if (problems.length || !st.transcript.trim()) showErr(problems.join("\n") || "I could not find any chat messages in that picture. Try a clearer or zoomed-in screenshot.");
+  } catch (e) { done(); showErr("Reading the picture failed: " + e.message); }
+}
+drop.onclick = () => file.click();
+drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); file.click(); } };
+file.onchange = () => { handleFiles(file.files); file.value = ""; };
+["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => handleFiles(e.dataTransfer.files));
+addEventListener("dragover", e => e.preventDefault()); addEventListener("drop", e => e.preventDefault());
+addEventListener("paste", e => {
+  const f = [...(e.clipboardData?.files || [])].filter(isPic);
+  if (f.length) { e.preventDefault(); tab("up"); handleFiles(f); }
+});
+$("#sample").onclick = async () => {
+  const t = await (await fetch("/static/sample_chat.txt")).text();
+  hideErr(); setText(t, "sample chat (fictional, 50 messages)", "Sample chat", "text");
+};
+
+function showErr(m){ const e = $("#err"); e.textContent = m; e.style.display = "block"; }
+function hideErr(){ $("#err").style.display = "none"; }
+
+/* run */
+let pollT = null, startT = 0, tick = null;
+function setProgress(frac, stage){
+  const p = Math.max(.03, Math.min(.97, frac)) * 100;
+  $("#fill").style.width = p + "%"; $("#crawler").style.left = p + "%";
+  $("#stage").innerHTML = ""; $("#stage").append(stage, el("small", {text: `  ${Math.round((Date.now()-startT)/1000)}s`}));
+}
+$("#go").onclick = async () => {
+  const text = $("#text").value;
+  hideErr();
+  if (!text.trim()) { showErr("Drop a chat file, paste some chat, or load the sample first."); return; }
+  const w = $("#win").value, body = {text, allow_fallback: $("#fb").checked, save_history: $("#hist-on").checked, source: src.name, kind: src.kind};
+  if (w === "h12") body.last_hours = 12; if (w === "h24") body.last_hours = 24; if (w === "n200") body.last_n = 200;
+  $("#go").disabled = true; $("#out").style.display = "none"; $("#prog").style.display = "block";
+  startT = Date.now(); setProgress(.03, "Waking up...");
+  clearInterval(tick); tick = setInterval(() => { const s = $("#stage").firstChild; if (s) $("#stage").lastChild.textContent = `  ${Math.round((Date.now()-startT)/1000)}s`; }, 1000);
+  try {
+    const r = await fetch("/api/jobs", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.detail || "Something went wrong.");
+    poll(j.job);
+  } catch (e) { done(); showErr(e.message); }
+};
+function done(){ clearInterval(pollT); clearInterval(tick); $("#go").disabled = false; $("#prog").style.display = "none"; }
+function poll(id){
+  clearInterval(pollT);
+  pollT = setInterval(async () => {
+    try {
+      const j = await (await fetch("/api/jobs/" + id)).json();
+      if (j.state === "running") setProgress(j.done / Math.max(1, j.total), j.stage);
+      else if (j.state === "done") { done(); render(j.result); totals(); health(); loadHistory(true); }
+      else { done(); showErr(j.error || "The digest failed."); }
+    } catch { done(); showErr("Lost contact with the local server."); }
+  }, 700);
+}
+
+/* output */
+function render(r, o = {}){
+  current = r; $("#out").style.display = "block";
+  const sl = $("#srcline"); sl.textContent = o.label || ""; sl.style.display = o.label ? "block" : "none";
+  const hl = $("#headline"); hl.replaceChildren(...r.headline.map(t => el("p", {text: t})));
+  const s = r.stats;
+  const stat = (v, l) => el("div", {class: "stat"}, el("b", {text: v}), el("span", {text: l}));
+  $("#stats").replaceChildren(
+    stat(s.messages, `messages from ${s.people} ${s.people===1?"person":"people"}`),
+    stat(`~${s.minutes_saved} min`, `reading you skipped (est. ${s.minutes_to_read} min to read)`),
+    stat(`${s.seconds_taken}s`, `taken on this computer (${r.model})`),
+    stat(s.dropped_by_guardrails, "unsupported claims blocked by checks"));
+  $("#notes").replaceChildren(...(r.mode === "fallback" ? [el("div", {class: "notice", text: "Simple keyword digest: the AI model was not used for this one."})] : []),
+    ...r.notes.map(n => el("div", {class: "notice", text: n})));
+  const receipt = rc => {
+    const box = el("div", {class: "rcpt"}, el("small", {text: `${rc.sender} · ${rc.when} · message #${rc.id}`}), rc.text);
+    const b = el("button", {class: "rbtn", type: "button", "aria-expanded": "false", text: "receipt ▾"});
+    b.onclick = () => { const o = box.classList.toggle("open"); b.setAttribute("aria-expanded", o); b.textContent = o ? "hide receipt ▴" : "receipt ▾"; };
+    return [b, box];
+  };
+  const avatar = n => el("span", {class: "who", text: n === "Unassigned" ? "?" : n[0].toUpperCase(), style: n === "Unassigned" ? "background:#777" : `background:hsl(${hue(n)},60%,70%)`});
+  $("#actions").replaceChildren(...(r.actions.length ? r.actions.map(a => el("div", {class: "item"},
+      el("div", {}, avatar(a.who), el("span", {class: "task", text: a.task}), a.due ? el("span", {class: "pill", text: a.due}) : ""),
+      el("span", {class: "who-name", text: a.who === "Unassigned" ? "nobody named" : a.who}), ...receipt(a.receipt)))
+    : [el("p", {class: "empty", text: "No clear to-dos found."})]));
+  $("#dates").replaceChildren(...(r.dates.length ? r.dates.map(d => el("div", {class: "item"},
+      el("div", {}, el("span", {class: "task", text: d.what}), el("span", {class: "pill", text: d.when})), ...receipt(d.receipt)))
+    : [el("p", {class: "empty", text: "No dates found."})]));
+  $("#questions").replaceChildren(...(r.questions.length ? r.questions.map(q => el("div", {class: "item"},
+      el("div", {}, avatar(q.who), el("span", {class: "task", text: q.question})), ...receipt(q.receipt)))
+    : [el("p", {class: "empty", text: "No questions found."})]));
+  $("#points").replaceChildren(...(r.points.length ? r.points.map(p => el("li", {text: p})) : [el("li", {text: "(Only shown when the AI model reads the chat.)"})]));
+  if (o.scroll !== false) $("#out").scrollIntoView({behavior: "smooth", block: "start"});
+}
+$("#copy").onclick = async () => {
+  if (!current) return;
+  const r = current, L = [];
+  L.push("CATCH-UP", ...r.headline, "");
+  if (r.actions.length) { L.push("TO DO"); r.actions.forEach(a => L.push(`- ${a.who === "Unassigned" ? "" : a.who + ": "}${a.task}${a.due ? " (" + a.due + ")" : ""}`)); L.push(""); }
+  if (r.dates.length) { L.push("DATES"); r.dates.forEach(d => L.push(`- ${d.what}: ${d.when}`)); L.push(""); }
+  if (r.questions.length) { L.push("QUESTIONS ASKED"); r.questions.forEach(q => L.push(`- ${q.who}: ${q.question}`)); }
+  try { await navigator.clipboard.writeText(L.join("\n").trim()); $("#copied").textContent = "Copied!"; }
+  catch { $("#copied").textContent = "Select and copy manually (clipboard blocked)."; }
+  setTimeout(() => $("#copied").textContent = "", 2500);
+};
+
+/* ---------------- history ---------------- */
+let HIST = [];
+const KIND = {text: "Chat file", pdf: "PDF", image: "Screenshots", live: "Live scan"};
+const fmt = iso => { try { return new Date(iso).toLocaleString([], {dateStyle: "medium", timeStyle: "short"}); } catch { return iso; } };
+async function loadHistory(quiet){
+  try { HIST = (await (await fetch("/api/history")).json()).items; } catch { HIST = []; }
+  $("#hcount").textContent = HIST.length ? `(${HIST.length})` : "";
+  if (!quiet || $("#pane-hist").classList.contains("on")) drawHistory();
+}
+function drawHistory(){
+  const q = $("#hsearch").value.trim().toLowerCase();
+  const rows = HIST.filter(h => !q || (h.title + " " + h.headline).toLowerCase().includes(q));
+  $("#hlist").replaceChildren(...(rows.length ? rows.map(h => {
+    const c = h.counts;
+    const open = el("button", {class: "btn ghost", type: "button", text: "Open"});
+    open.onclick = async () => {
+      const r = await fetch("/api/history/" + h.id);
+      if (!r.ok) { loadHistory(); return; }
+      const e = await r.json();
+      render(e.result, {label: `From History: ${e.title} · ${fmt(e.created_at)}`});
+    };
+    const del = el("button", {class: "btn ghost", type: "button", text: "Delete"});
+    del.onclick = async () => { if (confirm(`Delete "${h.title}" from History?`)) { await fetch("/api/history/" + h.id, {method: "DELETE"}); loadHistory(); } };
+    return el("div", {class: "hitem"},
+      el("h3", {}, h.title, el("span", {class: "tagk", text: KIND[h.kind] || h.kind})),
+      el("time", {datetime: h.created_at, text: fmt(h.created_at) + (h.updated_at !== h.created_at ? ` (updated ${fmt(h.updated_at)})` : "")}),
+      el("p", {text: h.headline || "(no headline)"}),
+      el("div", {class: "hmeta"}, el("span", {class: "tagk", text: `${c.messages} messages`}), el("span", {class: "tagk", text: `${c.actions} to-dos`}),
+        el("span", {class: "tagk", text: `${c.dates} dates`}), el("span", {class: "tagk", text: `${c.questions} questions`}),
+        el("span", {class: "sp"}), open, del));
+  }) : [el("p", {class: "empty", text: HIST.length ? "Nothing matches that search." : "No history yet. Finished digests will show up here with their date and time."})]));
+}
+$("#hsearch").oninput = drawHistory;
+$("#hclear").onclick = async () => { if (HIST.length && confirm("Delete ALL history on this computer?")) { await fetch("/api/history", {method: "DELETE"}); loadHistory(); } };
+loadHistory(true);
+
+/* ---------------- live scan ---------------- */
+const Lv = {sid: null, stream: null, timer: null, poll: null, paused: false, prev: null, sending: false, lastTs: 0, ended: false};
+const lvErr = m => { const e = $("#live-err"); e.textContent = m; e.style.display = m ? "block" : "none"; };
+function lvUI(running){
+  $("#livebadge").classList.toggle("on", running); $("#livebadge").classList.remove("paused");
+  $("#live-start").hidden = running; $("#live-every").parentElement.hidden = running;
+  for (const id of ["live-now", "live-pause", "live-digest", "live-stop"]) $("#" + id).hidden = !running;
+  $("#livegrid").hidden = !running && !Lv.sid;
+}
+function lvStats(st){
+  const stat = (v, l) => el("div", {class: "stat"}, el("b", {text: v}), el("span", {text: l}));
+  $("#lstat").replaceChildren(stat(st.messages, "messages read"), stat(st.scans, "looks taken"), stat(st.last_seconds ? st.last_seconds + "s" : "-", "last read took"));
+  const parts = [];
+  if (st.chat_name) parts.push(`Chat: ${st.chat_name}.`);
+  if (st.stage) parts.push(st.stage + "...");
+  else if (st.state === "running") parts.push(Lv.paused ? "Paused." : Lv.note || "Watching...");
+  if (st.digest_ts) parts.push(`Digest updated ${new Date(st.digest_ts * 1000).toLocaleTimeString()}.`);
+  $("#livemsg").textContent = parts.join(" ");
+}
+async function lvPoll(){
+  if (!Lv.sid) return;
+  try {
+    const st = await (await fetch("/api/live/" + Lv.sid)).json();
+    lvStats(st);
+    if (st.error) lvErr(st.error); else if ($("#live-err").textContent && !/Screen|share|browser/i.test($("#live-err").textContent)) lvErr("");
+    if (st.digest && st.digest_ts !== Lv.lastTs) { Lv.lastTs = st.digest_ts; render(st.digest, {scroll: false, label: "Live digest, updating as you scan"}); }
+    if (st.state === "finished") {
+      clearInterval(Lv.poll); Lv.poll = null; lvUI(false);
+      $("#livemsg").textContent = st.saved_id ? "Scan finished and saved to History." : "Scan finished (not saved to History).";
+      if (st.digest) render(st.digest, {scroll: true, label: "Final digest from your live scan"});
+      Lv.sid = null; $("#livegrid").hidden = false; loadHistory(true); totals();
+    }
+  } catch {}
+}
+function lvDiff(canvas){
+  const c = document.createElement("canvas"); c.width = 48; c.height = 48;
+  const x = c.getContext("2d"); x.drawImage(canvas, 0, 0, 48, 48);
+  const d = x.getImageData(0, 0, 48, 48).data, g = new Uint8Array(48*48);
+  for (let i = 0; i < g.length; i++) g[i] = (d[i*4] + d[i*4+1] + d[i*4+2]) / 3;
+  let diff = 0;
+  if (Lv.prev) for (let i = 0; i < g.length; i++) diff += Math.abs(g[i] - Lv.prev[i]);
+  return {g, diff: Lv.prev ? diff / g.length : 999};
+}
+async function lvCapture(force){
+  const v = $("#live-video");
+  if (!Lv.sid || Lv.paused || Lv.sending || !v.videoWidth) return;
+  const k = Math.min(1, 1800 / v.videoWidth), c = document.createElement("canvas");
+  c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+  c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+  const {g, diff} = lvDiff(c);
+  if (!force && diff < 1.2) { Lv.note = "Nothing new on screen. Waiting..."; return; }
+  Lv.sending = true;
+  try {
+    const blob = await new Promise(r => c.toBlob(r, "image/jpeg", .86));
+    const r = await fetch(`/api/live/${Lv.sid}/image`, {method: "POST", headers: {"X-Kind": "image"}, body: blob});
+    const j = await r.json();
+    if (r.ok && j.accepted) { Lv.prev = g; Lv.note = "Reading what is on screen..."; }
+    else if (r.ok) Lv.note = "Still reading the last picture, will look again soon.";
+  } catch { Lv.note = "Could not reach the local server."; }
+  Lv.sending = false;
+}
+function lvSchedule(){ clearInterval(Lv.timer); Lv.timer = setInterval(() => lvCapture(false), +$("#live-every").value * 1000); }
+$("#live-every").onchange = () => { if (Lv.sid) lvSchedule(); };
+$("#live-start").onclick = async () => {
+  lvErr("");
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) { lvErr("This browser cannot share a window. Use Chrome, Edge, Firefox or Safari on a computer (not a phone)."); return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getDisplayMedia({video: {frameRate: 2}, audio: false}); }
+  catch (e) { lvErr("Screen sharing was not allowed. On a Mac, open System Settings > Privacy and Security > Screen Recording, turn on your browser, restart it, then try again."); return; }
+  try {
+    const r = await fetch("/api/live/start", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({kind: "live"})});
+    Lv.sid = (await r.json()).session;
+  } catch { stream.getTracks().forEach(t => t.stop()); lvErr("Could not reach the local server."); return; }
+  Object.assign(Lv, {stream, paused: false, prev: null, sending: false, lastTs: 0, note: "Watching...", ended: false});
+  const v = $("#live-video"); v.srcObject = stream; v.play().catch(() => {});
+  stream.getVideoTracks()[0].addEventListener("ended", () => { if (Lv.sid && !Lv.ended) { lvErr("Sharing stopped, so the scan was ended."); lvStop(); } });
+  $("#live-pause").textContent = "Pause"; lvUI(true); lvSchedule();
+  clearInterval(Lv.poll); Lv.poll = setInterval(lvPoll, 2000); lvPoll();
+  setTimeout(() => lvCapture(true), 1200);
+};
+$("#live-now").onclick = () => lvCapture(true);
+$("#live-pause").onclick = () => {
+  Lv.paused = !Lv.paused; $("#live-pause").textContent = Lv.paused ? "Resume" : "Pause";
+  $("#livebadge").classList.toggle("paused", Lv.paused); $("#livebadge").textContent = Lv.paused ? "PAUSED" : "LIVE";
+  if (!Lv.paused) lvCapture(true);
+};
+$("#live-digest").onclick = async () => {
+  const r = await fetch(`/api/live/${Lv.sid}/digest`, {method: "POST"});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) lvErr(j.detail || "Nothing to digest yet."); else if (j.started === false) lvErr("Still busy reading. Try again in a moment.");
+};
+async function lvStop(){
+  if (!Lv.sid) return;
+  Lv.ended = true; clearInterval(Lv.timer);
+  if (Lv.stream) Lv.stream.getTracks().forEach(t => t.stop());
+  $("#live-video").srcObject = null; Lv.stream = null;
+  $("#live-stop").hidden = true; $("#live-now").hidden = true; $("#live-pause").hidden = true; $("#live-digest").hidden = true;
+  $("#livemsg").textContent = "Finishing up, writing the final digest...";
+  try { await fetch(`/api/live/${Lv.sid}/stop`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({save_history: $("#hist-on").checked, source: ""})}); }
+  catch { lvErr("Could not reach the local server to finish."); }
+}
+$("#live-stop").onclick = lvStop;
+addEventListener("pagehide", () => { if (Lv.stream) Lv.stream.getTracks().forEach(t => t.stop()); });
+</script>
+</body>
+</html>

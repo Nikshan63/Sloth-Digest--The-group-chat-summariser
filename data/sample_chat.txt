@@ -1,0 +1,54 @@
+23/10/2026, 8:02 pm - Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.
+23/10/2026, 8:02 pm - Riya created group "CSE Final Year Squad"
+23/10/2026, 8:05 pm - Riya: guys the demo is finally fixed. Prof. Banerjee wants us in Lab 3 on Monday 26 Oct at 10:30 am
+23/10/2026, 8:05 pm - Arjun: finally!! 10:30 sharp?
+23/10/2026, 8:06 pm - Riya: yes sharp. he said he will not wait
+23/10/2026, 8:09 pm - Meera: okay but who is booking the projector? last time it was a mess
+23/10/2026, 8:10 pm - Sam: i can ask the lab assistant tomorrow morning
+23/10/2026, 8:10 pm - Meera: please do that Sam, and confirm in the group by 12 noon
+23/10/2026, 8:11 pm - Sam: done, will confirm by 12 tomorrow
+23/10/2026, 8:14 pm - Dev: <Media omitted>
+23/10/2026, 8:14 pm - Dev: lol this is how our demo will look if the wifi dies
+23/10/2026, 8:15 pm - Arjun: bro stop 😂
+23/10/2026, 8:20 pm - Riya: serious stuff now. status check on modules?
+23/10/2026, 8:21 pm - Arjun: login module is 80% done. i will finish it by Saturday night
+23/10/2026, 8:22 pm - Riya: ok. Meera how is the dashboard?
+23/10/2026, 8:24 pm - Meera: charts are done, still need to connect the real data. will do by Sunday afternoon
+23/10/2026, 8:25 pm - Dev: i am on the report. draft goes to Riya by Sunday 6 pm
+23/10/2026, 8:25 pm - Riya: perfect. Dev please follow the college template this time, the red one
+23/10/2026, 8:26 pm - Dev: yes yes the red template, noted
+23/10/2026, 8:30 pm - Sam: does anyone have the ER diagram? i need it for the printouts
+23/10/2026, 8:33 pm - Arjun: it was in the old drive link. Riya you had it?
+23/10/2026, 8:40 pm - Meera: also does anyone know if the demo needs the mobile view or only desktop?
+23/10/2026, 8:45 pm - Arjun: dont know, ask sir
+23/10/2026, 8:52 pm - Riya: okay i will ask him tomorrow and tell you
+23/10/2026, 9:10 pm - Dev: movie anyone? new thriller on Netflix
+23/10/2026, 9:11 pm - Sam: Saturday night is cricket, india vs england. forget movies
+23/10/2026, 9:12 pm - Dev: true true
+23/10/2026, 9:13 pm - Arjun: pizza after the demo? my treat if we get an A
+23/10/2026, 9:13 pm - Meera: deal 🍕
+23/10/2026, 9:14 pm - Sam: Meera it is "if" 😂
+23/10/2026, 9:30 pm - Riya: one more thing. the final report must be uploaded on the college portal before 5 pm on Tuesday 27 Oct. portal closes automatically
+23/10/2026, 9:31 pm - Dev: noted. but i will send the draft earlier so we can fix mistakes
+23/10/2026, 9:32 pm - Riya: yes. Sam please print 4 copies of the report on Sunday evening, one for each of us plus one for sir
+23/10/2026, 9:33 pm - Sam: ok 4 copies Sunday evening. i need the ER diagram though
+23/10/2026, 9:35 pm - Riya: will send it tonight
+23/10/2026, 9:50 pm - Arjun: <Media omitted>
+23/10/2026, 9:51 pm - Arjun: my laptop charger just died. need a new one before Monday, anyone has a spare 65W type-C?
+23/10/2026, 9:55 pm - Meera: i have one, will bring it Monday
+23/10/2026, 10:02 pm - Riya: sent the ER diagram on the drive. check the Diagrams folder
+23/10/2026, 10:03 pm - Sam: got it, thanks
+24/10/2026, 7:45 am - Dev: good morning team
+24/10/2026, 7:46 am - Dev: reminder that the exam form fee last date is Monday, dont forget to pay
+24/10/2026, 7:50 am - Meera: oh i completely forgot, paying today
+24/10/2026, 8:01 am - Arjun: morning. i woke up early and pushed the login fixes. testing now
+24/10/2026, 8:05 am - Riya: nice. everyone please push your code to the shared GitHub repo before Sunday night so i can run the full demo once on Monday morning
+24/10/2026, 8:06 am - Meera: ok, pushing the dashboard by Sunday evening
+24/10/2026, 8:10 am - Sam: lab assistant said projector is available on Monday only after 10 am. so 10:30 should be fine. booked it
+24/10/2026, 8:11 am - Riya: great Sam, thank you
+24/10/2026, 8:15 am - Dev: team lunch at the canteen at 1:30 today?
+24/10/2026, 8:16 am - Arjun: yes but i am late, class till 2
+24/10/2026, 8:20 am - Meera: also someone please remind Dev to send the draft 😅
+24/10/2026, 8:21 am - Dev: i heard that Meera
+24/10/2026, 8:22 am - Riya: Dev just do it, Sunday 6 pm is the last time, not a suggestion
+24/10/2026, 8:23 am - Dev: yes boss
